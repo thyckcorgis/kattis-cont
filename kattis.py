@@ -12,6 +12,8 @@ KATTIS = 'https://open.kattis.com'
 URLS = {
     "unis": "/ranklist/universities",
     "uofa": "/universities/ualberta.ca",
+    "ca": "/countries/CAN",
+    "ph": "/countries/PHL",
 }
 
 
