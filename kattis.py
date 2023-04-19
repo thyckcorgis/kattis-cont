@@ -55,13 +55,13 @@ def parse_page(content):
     soup = BeautifulSoup(content, 'html.parser')
     group_info = (
         soup.find("div", attrs={'class': 'divider_list-flex'})
-        .find_all('div')
+        .find_all('div')  # type: ignore
     )
     info = {v[1]: v[2] for v in [d.text.split('\n') for d in group_info][:3]}
-    info["Name"] = soup.h1.text
+    info["Name"] = soup.h1.text  # type: ignore
     info["Rank"] = int(info.pop("Rank"))
     info["Score"] = float(info.pop("Score"))
-    users = soup.find(id="top_users").find_all('tr')
+    users = soup.find(id="top_users").find_all('tr')  # type: ignore
     info["Top_Users"] = [*map(get_row_data, users[1:])]
     return info
 
@@ -85,7 +85,7 @@ def parse_uni_row_data(row):
 def get_universities():
     page = get_page(URLS['unis'])
     soup = BeautifulSoup(page, 'html.parser')
-    unis = soup.find(id="top_universities").find_all('tr')[1:]
+    unis = soup.find(id="top_universities").find_all('tr')[1:]  # type: ignore
     return (
         pl.DataFrame(
             [parse_uni_row_data(r) for r in unis],

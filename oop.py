@@ -8,4 +8,4 @@ a = curl.split(' ')
 # response is gzipped so we tell cURL to decompress it first
 cmd = ' '.join(a[:1] + ['--compressed'] + a[1:])
 with open('page.html', 'wb') as f:
-    f.write(check_output(cmd, shell=1))
+    f.write(check_output(cmd, shell=True))
