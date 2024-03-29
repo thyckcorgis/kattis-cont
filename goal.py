@@ -31,8 +31,8 @@ def get_sum(df: pl.DataFrame, score: float, user: List[str]):
                 )
             )
         ])
-        .with_columns((0.2 * (0.8**pl.col('Rank')) * pl.col('Score')).alias('Contributed'))
-        ['Contributed']
+        .select(C=(0.2 * (0.8**pl.col('Rank')) * pl.col('Score')))
+        ['C']
         .sum()
     )
 
@@ -79,7 +79,7 @@ def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
 
 
 def main():
-    df = get_group_df(URLS['uofa'], skip_cache=True)
+    df = get_group_df(URLS['uofa'])
     users: List[str] = []
     while (user := input('Username(s) (input empty to finish): ')):
         users.append(user)
@@ -98,9 +98,10 @@ def main():
 
 
 if __name__ == "__main__":
+    print('Polars version:', pl.__version__)
     res = main()
     print()
-    if res is Goal:
+    if isinstance(res, Goal):
         pl.Config.set_fmt_str_lengths(100)
         pl.Config.set_tbl_rows(50)
         pl.Config.set_tbl_hide_column_data_types(True)
