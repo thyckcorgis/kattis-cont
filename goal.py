@@ -112,13 +112,13 @@ if __name__ == "__main__":
         pl.Config.set_tbl_hide_dataframe_shape(True)
         rows = [
             ['Results', ''],
-            ['Required additional score', res.i_goal],
+            ['Required additional score', round(res.i_goal, 1)],
             ['Current Individual Score', ''],
-            *[[k, v] for k, v in res.i_curr.items()],
+            *[[k, round(v, 1)] for k, v in res.i_curr.items()],
             ['Required Individual score', ''],
-            *[[k, v] for k, v in res.req.items()],
-            ['Group Score goal', res.tot_goal],
-            ['Current Group Score', res.tot_curr]
+            *[[k, round(v, 1)] for k, v in res.req.items()],
+            ['Group Score goal', round(res.tot_goal, 1)],
+            ['Current Group Score', round(res.tot_curr, 1)]
         ]
         print(pl.DataFrame(rows, schema=[
               ('Col', pl.Utf8), ('Score', pl.Utf8)]))
