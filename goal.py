@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-from typing import List
+import sys
 from collections import namedtuple
+from typing import List
+
 import polars as pl
 
 from kattis import URLS, get_group_df
@@ -13,7 +15,7 @@ def get_sum(df: pl.DataFrame, score: float, user: List[str]):
 
     def process(u: dict):
         if u['URL'] in user:
-            u['Score'] = score
+            u['Score'] = u['Score'] + score
         return u
 
     def add_index(k, i):
@@ -37,7 +39,7 @@ def get_sum(df: pl.DataFrame, score: float, user: List[str]):
     )
 
 
-Goal = namedtuple('Goal', 'i_goal i_curr req tot_goal tot_curr')
+Goal = namedtuple('Goal', 'i_goal add_score i_curr req tot_goal tot_curr')
 
 
 def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
@@ -53,7 +55,7 @@ def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
         return msg
         # raise ValueError(msg)
     # We can only go up
-    low = min(r['Score'] for r in rows)
+    low = 0
     # This is assuming you're alone and carrying the whole group
     high = goal * 5
     iters = []
@@ -64,8 +66,9 @@ def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
         if 0 <= total - goal <= 0.1:
             return Goal(
                 i_goal=mid,
+                add_score=mid,
                 i_curr=originals,
-                req={k: mid-v for k, v in originals.items()},
+                req={k: v+mid for k, v in originals.items()},
                 tot_goal=total,
                 tot_curr=orig_total,
             )
@@ -79,16 +82,17 @@ def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
 
 
 def main():
+    tty = sys.stdin.isatty()
     df = get_group_df(URLS['uofa'])
     users: List[str] = []
-    while (user := input('Username(s) (input empty to finish): ')):
+    while (user := input(tty * 'Username(s) (input empty to finish): ')):
         users.append(user)
     if not users:
         msg = 'User not entered'
         return msg
         # raise ValueError(msg)
     users = [f'/users/{u}' for u in users]
-    goal = input('Group Score goal: ')
+    goal = input(tty*'Group Score goal: ')
     if not goal:
         msg = 'Goal not entered'
         return msg
@@ -112,8 +116,9 @@ if __name__ == "__main__":
             ['Individual Score goal', res.i_goal],
             ['Current Individual Score', ''],
             *[[k, v] for k, v in res.i_curr.items()],
-            ['Required additional score', ''],
+            ['Required Individual score', ''],
             *[[k, v] for k, v in res.req.items()],
+            ['Required additional score', res.add_score],
             ['Group Score goal', res.tot_goal],
             ['Current Group Score', res.tot_curr]
         ]
