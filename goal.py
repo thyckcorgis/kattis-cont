@@ -39,7 +39,7 @@ def get_sum(df: pl.DataFrame, score: float, user: List[str]):
     )
 
 
-Goal = namedtuple('Goal', 'i_goal add_score i_curr req tot_goal tot_curr')
+Goal = namedtuple('Goal', 'i_goal i_curr req tot_goal tot_curr')
 
 
 def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
@@ -66,7 +66,6 @@ def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
         if 0 <= total - goal <= 0.1:
             return Goal(
                 i_goal=mid,
-                add_score=mid,
                 i_curr=originals,
                 req={k: v+mid for k, v in originals.items()},
                 tot_goal=total,
@@ -113,12 +112,11 @@ if __name__ == "__main__":
         pl.Config.set_tbl_hide_dataframe_shape(True)
         rows = [
             ['Results', ''],
-            ['Individual Score goal', res.i_goal],
+            ['Required additional score', res.i_goal],
             ['Current Individual Score', ''],
             *[[k, v] for k, v in res.i_curr.items()],
             ['Required Individual score', ''],
             *[[k, v] for k, v in res.req.items()],
-            ['Required additional score', res.add_score],
             ['Group Score goal', res.tot_goal],
             ['Current Group Score', res.tot_curr]
         ]
