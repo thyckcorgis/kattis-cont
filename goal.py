@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+from typing import List
 from collections import namedtuple
 import polars as pl
 
 from kattis import URLS, get_group_df
 
 
-def get_sum(df: pl.DataFrame, score: float, user: list[str]):
+def get_sum(df: pl.DataFrame, score: float, user: List[str]):
     v = df.sort(by=['Score'], descending=True).with_columns(
         (0.2 * (0.8**pl.col('Rank')) * pl.col('Score')).alias('Contributed'))
 
@@ -39,7 +40,7 @@ def get_sum(df: pl.DataFrame, score: float, user: list[str]):
 Goal = namedtuple('Goal', 'i_goal i_curr req tot_goal tot_curr')
 
 
-def find_goal(df: pl.DataFrame, goal: float, user: list[str]):
+def find_goal(df: pl.DataFrame, goal: float, user: List[str]):
     rows = df.filter(pl.col('URL').apply(lambda x: x in user)).to_dicts()
     if not rows:
         msg = f'user {user} not found in top 50. git gud'
@@ -78,8 +79,8 @@ def find_goal(df: pl.DataFrame, goal: float, user: list[str]):
 
 
 def main():
-    df = get_group_df(URLS['uofa'])
-    users: list[str] = []
+    df = get_group_df(URLS['uofa'], skip_cache=True)
+    users: List[str] = []
     while (user := input('Username(s) (input empty to finish): ')):
         users.append(user)
     if not users:
@@ -99,7 +100,7 @@ def main():
 if __name__ == "__main__":
     res = main()
     print()
-    if type(res) == Goal:
+    if res is Goal:
         pl.Config.set_fmt_str_lengths(100)
         pl.Config.set_tbl_rows(50)
         pl.Config.set_tbl_hide_column_data_types(True)
